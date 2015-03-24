@@ -1,7 +1,7 @@
 var app = {
   username: '<anonymous>',
   // server: 'https://api.parse.com/1/classes/chatterbox',
-  server: 'http://127.0.0.1:3000/',
+  server: 'http://127.0.0.1:3000/1/classes/chatterbox',
   friendsList: {},
   lastGetMsgTime: "",
   defaultChatRoom: "lobby",
@@ -43,7 +43,7 @@ var app = {
       data: JSON.stringify(msgObject), // message contents passed in as an object
       contentType: 'application/json',
       success: function (data) {
-        console.log('data: ', data);
+        console.log('CLIENT:  data: ', data);
         app.fetch();
       },
       error: function (data) {
@@ -79,14 +79,17 @@ var app = {
       type: 'GET', // GET to create a new resource
       data: dataConstraints,
       success: function (data) { 
-console.log("DATA:  ", data)
-        if (data.results.length > 0)
-          app.lastGetMsgTime = data.results[0].updatedAt;
-        for(var i=Math.min(data.results.length - 1,20); i>=0; i--) {
+        var parsedData = JSON.parse(data);
+        console.log("CLIENT FETCH RESULTS:  ", parsedData["results"] + ";  DATA TYPEOF  ", (typeof parsedData) );
+        if ((typeof parsedData)!=="undefined") {
+          app.lastGetMsgTime = parsedData.updatedAt;
+        }
+  
+        for(var i=Math.min(parsedData.results.length - 1,20); i>=0; i--) {
           var message = {
-            username: data.results[i].username,
-            text: data.results[i].text,
-            roomname: data.results[i].roomname
+            username: parsedData.results[i].username,
+            text: parsedData.results[i].text,
+            roomname: parsedData.results[i].roomname
           };
           app.addMessage(message);
         }
