@@ -1,6 +1,7 @@
 var app = {
   username: '<anonymous>',
-  server: 'https://api.parse.com/1/classes/chatterbox',
+  // server: 'https://api.parse.com/1/classes/chatterbox',
+  server: 'http://127.0.0.1:3000/',
   friendsList: {},
   lastGetMsgTime: "",
   defaultChatRoom: "lobby",
@@ -35,12 +36,14 @@ var app = {
     };
 
     // post a message (as an object) to the server
+    console.log('msgObject: ', JSON.stringify( msgObject) );
     $.ajax({
       url: app.server, // This is the url you should use to communicate with the parse API server.
       type: 'POST', // POST to create a new resource
       data: JSON.stringify(msgObject), // message contents passed in as an object
       contentType: 'application/json',
       success: function (data) {
+        console.log('data: ', data);
         app.fetch();
       },
       error: function (data) {
@@ -76,6 +79,7 @@ var app = {
       type: 'GET', // GET to create a new resource
       data: dataConstraints,
       success: function (data) { 
+console.log("DATA:  ", data)
         if (data.results.length > 0)
           app.lastGetMsgTime = data.results[0].updatedAt;
         for(var i=Math.min(data.results.length - 1,20); i>=0; i--) {

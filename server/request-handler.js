@@ -12,7 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-
+var storage = [];
 
 exports.requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -25,6 +25,8 @@ exports.requestHandler = function(request, response) {
   // http://nodejs.org/documentation/api/
 
   // Do some basic logging.
+  // console.log('request: ', request);
+  // console.log('response: ', response);
   //
   // Adding more logging to your server can be an easy way to get passive
   // debugging help, but you should always be careful about leaving stray
@@ -33,6 +35,20 @@ exports.requestHandler = function(request, response) {
 
   // The outgoing status.
   var statusCode = 200;
+  if(request.method==="POST") {
+    statusCode = 201;
+    var postBody = '';
+    request.on('data', function(data){
+      postBody += data;
+    })
+    request.on('end', function(){
+      var post = JSON.parse(postBody)
+      console.log(post);
+      storage.push(post);
+    })
+    // console.log('request: ', request)
+  }
+
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
@@ -46,6 +62,13 @@ exports.requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
+// '{"results":[{"createdAt":"2015-03-23T21:54:08.070Z","objectId":"UgqDLBTyxK","roomname":"lobby","text":"woohoo!","updatedAt":"2015-03-23T21:54:08.070Z","username":"Pablo"}]}';
+  console.log("STORAGE ", storage);
+  var responseData = { results: storage };
+  //   username: 'Jimbo',
+  //   text: 'Hey',
+  //   roomname: 'lobby'
+  // };
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -54,7 +77,8 @@ exports.requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end("Hello, World!");
+  // console.log( 'response data: *', JSON.stringify(responseData), '*' )
+  response.end( JSON.stringify(responseData) );
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).

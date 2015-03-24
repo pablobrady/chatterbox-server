@@ -15,14 +15,13 @@ var port = 3000;
 var ip = "127.0.0.1";
 
 var handler = require('./request-handler.js');
-
 // We use node's http module to create a server.
 //
 // The function we pass to http.createServer will be used to handle all
 // incoming requests.
 //
 // After creating the server, we will tell it to listen on the given port and IP. */
-var server = http.createServer(handler.handlerRequest);
+var server = http.createServer(handler.requestHandler);
 // var server = http.createServer(function(request, response) {
 //   response.writeHead(200);
 //   response.write("Hello, this is Paul.");
