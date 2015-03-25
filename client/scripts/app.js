@@ -3,7 +3,7 @@ var app = {
   // server: 'https://api.parse.com/1/classes/chatterbox',
   server: 'http://127.0.0.1:3000/1/classes/chatterbox',
   friendsList: {},
-  lastGetMsgTime: "",
+  lastGetMsgTime: 0,
   defaultChatRoom: "lobby",
   chatRoomsList: [],
 
@@ -64,24 +64,26 @@ var app = {
 
   fetch: function() {
     // Send an AJAX get request.
-    var dataConstraints = {};
-    dataConstraints['order'] = '-createdAt';
-    if (app.lastGetMsgTime) {
-      dataConstraints['where'] = {
-        'updatedAt': {'$gt': app.lastGetMsgTime},
-        'roomname': app.$chatRoom.val() || app.defaultChatRoom
-      };
-    };
+    // var dataConstraints = {};
+    // dataConstraints['order'] = '-createdAt';
+    // if (app.lastGetMsgTime) {
+      // dataConstraints['where'] = {
+      //   'updatedAt': {'$gt': app.lastGetMsgTime},
+      //   'roomname': app.$chatRoom.val() || app.defaultChatRoom
+      // };
+    // };
     //send AJAX request to get messages from the server
     //on success, add to the document message area
     $.ajax({
       url: app.server,
       type: 'GET', // GET to create a new resource
-      data: dataConstraints,
+      data: "order=-createdAt&createdAt=" + app.lastGetMsgTime,
       success: function (data) { 
+        console.log("CLIENT SUCCESS. ", data);
         var parsedData = JSON.parse(data);
-        console.log("CLIENT FETCH RESULTS:  ", parsedData["results"] + ";  DATA TYPEOF  ", (typeof parsedData) );
-        if ((typeof parsedData)!=="undefined") {
+
+        console.log("CLIENT FETCH RESULTS:  ", parsedData["results"][0].createdAt );
+        if (parsedData.createdAt) {
           app.lastGetMsgTime = parsedData.updatedAt;
         }
   

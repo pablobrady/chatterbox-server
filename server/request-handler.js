@@ -31,7 +31,8 @@ exports.requestHandler = function(request, response) {
     })
     request.on('end', function(){
       var post = JSON.parse(postBody)
-      console.log(post);
+      post['createdAt'] = Date.now()
+      console.log('post @ 35: ', post);
       storage.push(post);
       console.log('storage @ 36: ', storage);
     })
