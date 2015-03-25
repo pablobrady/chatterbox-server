@@ -23,6 +23,7 @@ exports.requestHandler = function(request, response) {
   // The outgoing status.
   var statusCode = 200;
   if(request.method==="POST") {
+    console.log('POST REQUEST');
     statusCode = 201;
     var postBody = '';
     request.on('data', function(data){
@@ -32,50 +33,28 @@ exports.requestHandler = function(request, response) {
       var post = JSON.parse(postBody)
       console.log(post);
       storage.push(post);
+      console.log('storage @ 36: ', storage);
     })
-    // console.log('request: ', request)
+    response.writeHead(statusCode, headers);
+    var responseData = { results: storage };
+    response.end( JSON.stringify(responseData) );
+  } else if (request.method === 'GET') {
+    response.writeHead(statusCode, headers);
+    var responseData = { results: storage };
+    response.end( JSON.stringify(responseData) );
+  } else if (request.method === 'OPTIONS') {
+    statusCode = 200;
+    response.writeHead(statusCode, headers);
+    // var responseData = { results: storage };
+    response.end();
+  } else {
+    statusCode = 404;
+    response.writeHead(statusCode, headers);
+    response.end();
   }
 
-  // Reject invalid URLs
-  // if(request.url.indexOf("1/classes/chatterbox")==-1) {
-  //   statusCode = 404;
-  //   response.writeHead(statusCode, headers);
-  //   response.end("This is not the page you're looking for... move along.");
-  // }
-
-
-  response.writeHead(statusCode, headers);
-
-// '{"results":[{"createdAt":"2015-03-23T21:54:08.070Z","objectId":"UgqDLBTyxK","roomname":"lobby","text":"woohoo!","updatedAt":"2015-03-23T21:54:08.070Z","username":"Pablo"}]}';
-  console.log("STORAGE ", storage);
-  var responseData = { results: storage };
-  //   username: 'Jimbo',
-  //   text: 'Hey',
-  //   roomname: 'lobby'
-  // };
-
-  // Make sure to always call response.end() - Node may not send
-  // anything back to the client until you do. The string you pass to
-  // response.end() will be the body of the response - i.e. what shows
-  // up in the browser.
-  //
-  // Calling .end "flushes" the response's internal buffer, forcing
-  // node to actually send all the data over to the client.
-  // console.log( 'response data: *', JSON.stringify(responseData), '*' )
-
-  console.log("SERVER:  " + JSON.stringify(responseData));
-  response.end( JSON.stringify(responseData) );
 };
 
-// These headers will allow Cross-Origin Resource Sharing (CORS).
-// This code allows this server to talk to websites that
-// are on different domains, for instance, your chat client.
-//
-// Your chat client is running from a url like file://your/chat/client/index.html,
-// which is considered a different domain.
-//
-// Another way to get around this restriction is to serve you chat
-// client from this domain by setting up static file serving.
 var defaultCorsHeaders = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
