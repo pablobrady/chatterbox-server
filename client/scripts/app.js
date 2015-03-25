@@ -79,12 +79,11 @@ var app = {
       type: 'GET', // GET to create a new resource
       data: "order=-createdAt&createdAt=" + app.lastGetMsgTime,
       success: function (data) { 
-        console.log("CLIENT SUCCESS. ", data);
         var parsedData = JSON.parse(data);
 
-        console.log("CLIENT FETCH RESULTS:  ", parsedData["results"][0].createdAt );
-        if (parsedData.createdAt) {
-          app.lastGetMsgTime = parsedData.updatedAt;
+        var dataLen = parsedData["results"].length;
+        if (parsedData["results"][dataLen-1] && parsedData["results"][dataLen-1].createdAt) {
+          app.lastGetMsgTime = parsedData["results"][dataLen-1].createdAt;
         }
   
         for(var i=Math.min(parsedData.results.length - 1,20); i>=0; i--) {

@@ -40,8 +40,18 @@ exports.requestHandler = function(request, response) {
     var responseData = { results: storage };
     response.end( JSON.stringify(responseData) );
   } else if (request.method === 'GET') {
+    var tempArray = String(request.url).split('createdAt=');
+    var passedInCreatedAt = tempArray[1];
+
+    var tempStorage = [];
+    for(var i=0; i<storage.length; i++) {
+      if(storage[i].createdAt > passedInCreatedAt) {
+        tempStorage.push(storage[i]);
+      }
+    }
+
     response.writeHead(statusCode, headers);
-    var responseData = { results: storage };
+    var responseData = { results: tempStorage };
     response.end( JSON.stringify(responseData) );
   } else if (request.method === 'OPTIONS') {
     statusCode = 200;
